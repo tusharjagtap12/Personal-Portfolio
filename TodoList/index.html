@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simple To-Do List</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>📝 My To-Do List</h1>
+
+  <form id="todo-form">
+    <input type="text" id="task-input" placeholder="Enter a new task..." required>
+    <button type="submit">Add</button>
+  </form>
+
+  <ul id="task-list"></ul>
+
+  <script>
+    const form = document.getElementById("todo-form");
+    const taskInput = document.getElementById("task-input");
+    const taskList = document.getElementById("task-list");
+
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    function renderTasks() {
+      taskList.innerHTML = "";
+      tasks.forEach((task, index) => {
+        const li = document.createElement("li");
+        if (task.completed) li.classList.add("completed");
+        li.innerHTML = `
+          <span>${task.text}</span>
+          <div class="buttons">
+            <button class="complete-btn" onclick="toggleTask(${index})">✔</button>
+            <button class="delete-btn" onclick="deleteTask(${index})">🗑</button>
+          </div>
+        `;
+        taskList.appendChild(li);
+      });
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    function toggleTask(index) {
+      tasks[index].completed = !tasks[index].completed;
+      renderTasks();
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      renderTasks();
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const newTask = taskInput.value.trim();
+      if (newTask !== "") {
+        tasks.push({ text: newTask, completed: false });
+        taskInput.value = "";
+        renderTasks();
+      }
+    });
+
+    renderTasks();
+  </script>
+
+</body>
+</html>
